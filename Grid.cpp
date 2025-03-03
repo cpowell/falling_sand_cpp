@@ -4,6 +4,21 @@
 
 #include "Grid.h"
 
+Particle* Grid::getCell(const int row, const int col) {
+    if (col < 0 || col >= width_) {
+        return nullptr;
+    }
+
+    if (row < 0 || row >= height_) {
+        return nullptr;
+    }
+
+    if (cells_[row][col] == nullptr) {
+        return nullptr;
+    }
+    return cells_[row][col];
+}
+
 Grid::Kind Grid::cellType(const int row, const int col) const {
     if (col < 0 || col >= width_) {
         return Kind::Rock;

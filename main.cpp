@@ -67,12 +67,9 @@ int main() {
 
         for (int r = 0; r < ROWS; ++r) {
             for (int c = 0; c < COLS; ++c) {
-                if (g.cellType(r, c) == Grid::Kind::Sand) {
-                    DrawRectangle(c * CELL_WIDTH, r * CELL_WIDTH, CELL_WIDTH, CELL_WIDTH, GOLD);
-                }
-
-                if (g.cellType(r, c) == Grid::Kind::Rock) {
-                    DrawRectangle(c * CELL_WIDTH, r * CELL_WIDTH, CELL_WIDTH, CELL_WIDTH, GRAY);
+                Particle* p = g.getCell(r, c);
+                if (p != nullptr) {
+                    DrawRectangle(c * CELL_WIDTH, r * CELL_WIDTH, CELL_WIDTH, CELL_WIDTH, p->color_);
                 }
             }
         }

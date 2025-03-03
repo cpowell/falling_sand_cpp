@@ -3,14 +3,17 @@
 #include "Grid.h"
 
 Particle::Particle(int row, int col, int type) : row_(row), col_(col), type_(type) {
+    std::random_device rd;
+    gen_.seed(rd());
+
     if (type == 's') {
-        color_ = GOLD;
+        color_ = ColorFromHSV(rdist_(gen_) * 30, 0.3, 0.7);
     } else if (type == 'r') {
-        color_ = GRAY;
+        color_ = ColorFromHSV(rdist_(gen_) * 10, 0.1, 0.3);
     }
 }
 
-Particle & Particle::operator=(const Particle &other) {
+Particle& Particle::operator=(const Particle& other) {
     if (this == &other) {
         return *this;
     }
@@ -21,7 +24,7 @@ Particle & Particle::operator=(const Particle &other) {
     return *this;
 }
 
-Particle::Particle(const Particle &other) {
+Particle::Particle(const Particle& other) {
     type_ = other.type_;
     color_ = other.color_;
     row_ = other.row_;
@@ -59,6 +62,6 @@ void SandParticle::update(const Grid& grid) {
     }
 }
 
-RockParticle::RockParticle(int row, int col): Particle(row, col, 'r') {
+RockParticle::RockParticle(int row, int col) : Particle(row, col, 'r') {
     // nop
 }

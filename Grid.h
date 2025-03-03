@@ -23,6 +23,8 @@ public:
         cells_[row][col] = std::move(p);
     }
 
+    Particle* getCell(const int row, const int col);
+
     Kind cellType(const int row, const int col) const;
 
     void evolve();
