@@ -4,19 +4,7 @@
 
 #include "Grid.h"
 
-void Grid::setCell(const int row, const int col, Kind kind) {
-    assert(col >= 0);
-    assert(col < width_);
-    assert(row >= 0);
-    assert(row < height_);
-    cells_[row][col] = kind;
-}
-
-Grid::Kind Grid::getCell(const int row, const int col) const {
-    // assert(col >= 0);
-    // assert(col < width_);
-    // assert(row >= 0);
-    // assert(row < height_);
+Grid::Kind Grid::cellType(const int row, const int col) const {
     if (col < 0 || col >= width_) {
         return Kind::Rock;
     }
@@ -25,7 +13,13 @@ Grid::Kind Grid::getCell(const int row, const int col) const {
         return Kind::Rock;
     }
 
-    return cells_[row][col];
+    if (cells_[row][col] == nullptr) {
+        return Kind::None;
+    } else if (cells_[row][col]->type_ == 's') {
+        return Kind::Sand;
+    } else if (cells_[row][col]->type_ == 'r') {
+        return Kind::Rock;
+    }
 }
 
 void Grid::evolve() {
@@ -41,30 +35,41 @@ void Grid::evolve() {
     //   - move to the only free diag cell
     for (int row = height_ - 2; row >= 0; --row) {
         for (int col = 0; col < width_; ++col) {
-            if (getCell(row, col) == Kind::Sand) {
-                if (getCell(row + 1, col) == Kind::None) {
-                    cells_[row + 1][col] = Kind::Sand;
-                    cells_[row][col] = Kind::None;
+            if (cellType(row, col) == Kind::Sand) {
+                Particle* pp = cells_[row][col];
+
+                // Straight down if possible
+                if (cellType(row + 1, col) == Kind::None) {
+                    cells_[row + 1][col] = pp;
+                    cells_[row][col] = nullptr;
                     continue;
                 }
 
-                bool left_free = getCell(row + 1, col - 1) == Kind::None;
-                bool right_free = getCell(row + 1, col + 1) == Kind::None;
+                // Otherwise look for a possible direction
+                bool left_free = cellType(row + 1, col - 1) == Kind::None;
+                bool right_free = cellType(row + 1, col + 1) == Kind::None;
 
                 if (left_free && right_free) {
-                    cells_[row][col] = Kind::None;
+                    int new_row = row + 1;
+                    int new_col = col;
 
                     if (dist(gen_)) {
-                        cells_[row + 1][col - 1] = Kind::Sand;
+                        --new_col;
                     } else {
-                        cells_[row + 1][col + 1] = Kind::Sand;
+                        ++new_col;
                     }
+                    cells_[new_row][new_col] = pp;
+                    cells_[row][col] = nullptr;
                 } else if (left_free) {
-                    cells_[row + 1][col - 1] = Kind::Sand;
-                    cells_[row][col] = Kind::None;
+                    int new_row = row + 1;
+                    int new_col = col - 1;
+                    cells_[new_row][new_col] = pp;
+                    cells_[row][col] = nullptr;
                 } else if (right_free) {
-                    cells_[row + 1][col + 1] = Kind::Sand;
-                    cells_[row][col] = Kind::None;
+                    int new_row = row + 1;
+                    int new_col = col + 1;
+                    cells_[new_row][new_col] = pp;
+                    cells_[row][col] = nullptr;
                 }
             }
         }
