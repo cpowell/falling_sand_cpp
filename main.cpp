@@ -37,14 +37,14 @@ int main() {
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             int nearest_row = pos.y / CELL_WIDTH;
             int nearest_col = pos.x / CELL_WIDTH;
-            SandParticle* sp = new SandParticle{ nearest_row, nearest_col };
+            Particle* sp = new Particle{ nearest_row, nearest_col, Particle::Kind::Sand };
             g.setCell(nearest_row, nearest_col, sp);
         }
 
         if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
             int nearest_row = pos.y / CELL_WIDTH;
             int nearest_col = pos.x / CELL_WIDTH;
-            RockParticle* rp = new RockParticle{ nearest_row, nearest_col };
+            Particle* rp = new Particle{ nearest_row, nearest_col, Particle::Kind::Rock };
             g.setCell(nearest_row, nearest_col, rp);
         }
 

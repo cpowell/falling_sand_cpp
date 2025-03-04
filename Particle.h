@@ -7,14 +7,17 @@ class Grid;
 
 class Particle {
 public:
-    Particle(int row, int col, int type);
+    enum class Kind {
+        None,
+        Sand,
+        Rock
+    };
+
+    Particle(int row, int col, Kind kind);
     Particle& operator=(const Particle& other);
     Particle(const Particle& other);
-    virtual ~Particle() = default;
 
-    virtual void update(const Grid& grid) = 0;
-
-    char type_;
+    Kind kind_;
     Color color_;
     int row_;
     int col_;
@@ -25,22 +28,4 @@ protected:
     std::uniform_int_distribution<> dist_{ 0, 1 };
     std::uniform_int_distribution<> colordist_{ 0, 255 };
     std::uniform_real_distribution<double> rdist_{ 0.0, 1.0 };
-};
-
-
-class SandParticle : public Particle {
-public:
-    SandParticle(int row, int col);
-
-    void update(const Grid& grid) override;
-};
-
-
-class RockParticle : public Particle {
-public:
-    RockParticle(int row, int col);
-
-    void update(const Grid& grid) override {
-        // Do nothing
-    }
 };

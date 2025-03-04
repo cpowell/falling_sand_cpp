@@ -19,21 +19,21 @@ Particle* Grid::getCell(const int row, const int col) {
     return cells_[row][col];
 }
 
-Grid::Kind Grid::cellType(const int row, const int col) const {
+Particle::Kind Grid::cellType(const int row, const int col) const {
     if (col < 0 || col >= width_) {
-        return Kind::Rock;
+        return Particle::Kind::Rock;
     }
 
     if (row < 0 || row >= height_) {
-        return Kind::Rock;
+        return Particle::Kind::Rock;
     }
 
     if (cells_[row][col] == nullptr) {
-        return Kind::None;
-    } else if (cells_[row][col]->type_ == 's') {
-        return Kind::Sand;
-    } else if (cells_[row][col]->type_ == 'r') {
-        return Kind::Rock;
+        return Particle::Kind::None;
+    } else if (cells_[row][col]->kind_ == Particle::Kind::Sand) {
+        return Particle::Kind::Sand;
+    } else if (cells_[row][col]->kind_ == Particle::Kind::Rock) {
+        return Particle::Kind::Rock;
     }
 }
 
@@ -50,19 +50,19 @@ void Grid::evolve() {
     //   - move to the only free diag cell
     for (int row = height_ - 2; row >= 0; --row) {
         for (int col = 0; col < width_; ++col) {
-            if (cellType(row, col) == Kind::Sand) {
+            if (cellType(row, col) == Particle::Kind::Sand) {
                 Particle* pp = cells_[row][col];
 
                 // Straight down if possible
-                if (cellType(row + 1, col) == Kind::None) {
+                if (cellType(row + 1, col) == Particle::Kind::None) {
                     cells_[row + 1][col] = pp;
                     cells_[row][col] = nullptr;
                     continue;
                 }
 
                 // Otherwise look for a possible direction
-                bool left_free = cellType(row + 1, col - 1) == Kind::None;
-                bool right_free = cellType(row + 1, col + 1) == Kind::None;
+                bool left_free = cellType(row + 1, col - 1) == Particle::Kind::None;
+                bool right_free = cellType(row + 1, col + 1) == Particle::Kind::None;
 
                 if (left_free && right_free) {
                     int new_row = row + 1;
