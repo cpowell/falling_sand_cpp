@@ -11,9 +11,11 @@ public:
         cells_.resize(height, std::vector<Particle*>(width));
     }
 
-    void setCell(const int row, const int col, Particle* p) {
+    void addParticle(const int row, const int col, Particle::Kind kind) {
         assert(row >= 0 && row < height_);
         assert(col >= 0 && col < width_);
+
+        Particle* p = new Particle{ row, col, kind};
         cells_[row][col] = std::move(p);
     }
 
