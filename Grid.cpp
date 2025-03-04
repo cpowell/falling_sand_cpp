@@ -8,8 +8,7 @@ void Grid::addParticle(const int row, const int col, Particle::Kind kind) {
     assert(row >= 0 && row < height_);
     assert(col >= 0 && col < width_);
 
-    Particle* p = new Particle{ row, col, kind };
-    cells_[row][col] = std::move(p);
+    cells_[row][col] = new Particle{ row, col, kind };
 }
 
 void Grid::removeParticle(const int row, const int col) {
@@ -28,10 +27,6 @@ Particle* Grid::getParticle(const int row, const int col) const {
     }
 
     if (row < 0 || row >= height_) {
-        return nullptr;
-    }
-
-    if (cells_[row][col] == nullptr) {
         return nullptr;
     }
 
