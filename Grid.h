@@ -7,12 +7,6 @@
 
 class Grid {
 public:
-    enum class Kind {
-        None,
-        Sand,
-        Rock
-    };
-
     Grid(int width, int height) : height_(height), width_(width) {
         cells_.resize(height, std::vector<Particle*>(width));
     }
@@ -25,7 +19,7 @@ public:
 
     Particle* getCell(const int row, const int col);
 
-    Kind cellType(const int row, const int col) const;
+    Particle::Kind cellType(const int row, const int col) const;
 
     void evolve();
 
