@@ -21,6 +21,7 @@ int main() {
     auto dpi = GetWindowScaleDPI();
 
     SetWindowMinSize(MAX_X, MAX_Y);
+    SetTargetFPS(60);
 
     int ROWS = MAX_Y / CELL_WIDTH;
     int COLS = MAX_X / CELL_WIDTH;
@@ -36,13 +37,17 @@ int main() {
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             int nearest_row = pos.y / CELL_WIDTH;
             int nearest_col = pos.x / CELL_WIDTH;
-            g.setCell(nearest_row, nearest_col, Grid::Kind::Sand);
+            g.addParticle(nearest_row, nearest_col, Particle::Kind::Sand);
         }
 
         if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
             int nearest_row = pos.y / CELL_WIDTH;
             int nearest_col = pos.x / CELL_WIDTH;
-            g.setCell(nearest_row, nearest_col, Grid::Kind::Rock);
+            if (IsKeyDown(KEY_E)) {
+                g.removeParticle(nearest_row, nearest_col);
+            } else {
+                g.addParticle(nearest_row, nearest_col, Particle::Kind::Rock);
+            }
         }
 
         // ===============================
@@ -64,12 +69,9 @@ int main() {
 
         for (int r = 0; r < ROWS; ++r) {
             for (int c = 0; c < COLS; ++c) {
-                if (g.getCell(r, c) == Grid::Kind::Sand) {
-                    DrawRectangle(c * CELL_WIDTH, r * CELL_WIDTH, CELL_WIDTH, CELL_WIDTH, GOLD);
-                }
-
-                if (g.getCell(r, c) == Grid::Kind::Rock) {
-                    DrawRectangle(c * CELL_WIDTH, r * CELL_WIDTH, CELL_WIDTH, CELL_WIDTH, GRAY);
+                Particle* p = g.getParticle(r, c);
+                if (p != nullptr) {
+                    DrawRectangle(c * CELL_WIDTH, r * CELL_WIDTH, CELL_WIDTH, CELL_WIDTH, p->color_);
                 }
             }
         }

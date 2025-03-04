@@ -4,28 +4,53 @@
 
 #include "Grid.h"
 
-void Grid::setCell(const int row, const int col, Kind kind) {
-    assert(col >= 0);
-    assert(col < width_);
-    assert(row >= 0);
-    assert(row < height_);
-    cells_[row][col] = kind;
+void Grid::addParticle(const int row, const int col, Particle::Kind kind) {
+    assert(row >= 0 && row < height_);
+    assert(col >= 0 && col < width_);
+
+    cells_[row][col] = new Particle{ row, col, kind };
 }
 
-Grid::Kind Grid::getCell(const int row, const int col) const {
-    // assert(col >= 0);
-    // assert(col < width_);
-    // assert(row >= 0);
-    // assert(row < height_);
+void Grid::removeParticle(const int row, const int col) {
+    assert(row >= 0 && row < height_);
+    assert(col >= 0 && col < width_);
+
+    if (cells_[row][col] != nullptr) {
+        delete (cells_[row][col]);
+        cells_[row][col] = nullptr;
+    }
+}
+
+Particle* Grid::getParticle(const int row, const int col) const {
     if (col < 0 || col >= width_) {
-        return Kind::Rock;
+        return nullptr;
     }
 
     if (row < 0 || row >= height_) {
-        return Kind::Rock;
+        return nullptr;
     }
 
     return cells_[row][col];
+}
+
+Particle::Kind Grid::particleType(const int row, const int col) const {
+    if (col < 0 || col >= width_) {
+        return Particle::Kind::Rock;
+    }
+
+    if (row < 0 || row >= height_) {
+        return Particle::Kind::Rock;
+    }
+
+    if (cells_[row][col] == nullptr) {
+        return Particle::Kind::None;
+    } else if (cells_[row][col]->kind_ == Particle::Kind::Sand) {
+        return Particle::Kind::Sand;
+    } else if (cells_[row][col]->kind_ == Particle::Kind::Rock) {
+        return Particle::Kind::Rock;
+    }
+
+    return Particle::Kind::None; // failsafe
 }
 
 void Grid::evolve() {
@@ -41,30 +66,43 @@ void Grid::evolve() {
     //   - move to the only free diag cell
     for (int row = height_ - 2; row >= 0; --row) {
         for (int col = 0; col < width_; ++col) {
-            if (getCell(row, col) == Kind::Sand) {
-                if (getCell(row + 1, col) == Kind::None) {
-                    cells_[row + 1][col] = Kind::Sand;
-                    cells_[row][col] = Kind::None;
+            if (particleType(row, col) == Particle::Kind::Sand) {
+                // Ok it's sand, now we can move it
+
+                Particle* pp = cells_[row][col];
+
+                // Straight down if possible
+                if (particleType(row + 1, col) == Particle::Kind::None) {
+                    cells_[row + 1][col] = pp;
+                    cells_[row][col] = nullptr;
                     continue;
                 }
 
-                bool left_free = getCell(row + 1, col - 1) == Kind::None;
-                bool right_free = getCell(row + 1, col + 1) == Kind::None;
+                // Otherwise look for a possible direction
+                bool left_free = particleType(row + 1, col - 1) == Particle::Kind::None;
+                bool right_free = particleType(row + 1, col + 1) == Particle::Kind::None;
 
                 if (left_free && right_free) {
-                    cells_[row][col] = Kind::None;
+                    int new_row = row + 1;
+                    int new_col = col;
 
                     if (dist(gen_)) {
-                        cells_[row + 1][col - 1] = Kind::Sand;
+                        --new_col;
                     } else {
-                        cells_[row + 1][col + 1] = Kind::Sand;
+                        ++new_col;
                     }
+                    cells_[new_row][new_col] = pp;
+                    cells_[row][col] = nullptr;
                 } else if (left_free) {
-                    cells_[row + 1][col - 1] = Kind::Sand;
-                    cells_[row][col] = Kind::None;
+                    int new_row = row + 1;
+                    int new_col = col - 1;
+                    cells_[new_row][new_col] = pp;
+                    cells_[row][col] = nullptr;
                 } else if (right_free) {
-                    cells_[row + 1][col + 1] = Kind::Sand;
-                    cells_[row][col] = Kind::None;
+                    int new_row = row + 1;
+                    int new_col = col + 1;
+                    cells_[new_row][new_col] = pp;
+                    cells_[row][col] = nullptr;
                 }
             }
         }
