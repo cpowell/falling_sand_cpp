@@ -11,17 +11,11 @@ public:
         cells_.resize(height, std::vector<Particle*>(width));
     }
 
-    void addParticle(const int row, const int col, Particle::Kind kind) {
-        assert(row >= 0 && row < height_);
-        assert(col >= 0 && col < width_);
+    void addParticle(const int row, const int col, Particle::Kind kind);
 
-        Particle* p = new Particle{ row, col, kind};
-        cells_[row][col] = std::move(p);
-    }
+    Particle* getParticle(const int row, const int col) const;
 
-    Particle* getCell(const int row, const int col);
-
-    Particle::Kind cellType(const int row, const int col) const;
+    Particle::Kind particleType(const int row, const int col) const;
 
     void evolve();
 

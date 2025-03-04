@@ -4,7 +4,15 @@
 
 #include "Grid.h"
 
-Particle* Grid::getCell(const int row, const int col) {
+void Grid::addParticle(const int row, const int col, Particle::Kind kind) {
+    assert(row >= 0 && row < height_);
+    assert(col >= 0 && col < width_);
+
+    Particle* p = new Particle{ row, col, kind };
+    cells_[row][col] = std::move(p);
+}
+
+Particle* Grid::getParticle(const int row, const int col) const {
     if (col < 0 || col >= width_) {
         return nullptr;
     }
@@ -16,10 +24,11 @@ Particle* Grid::getCell(const int row, const int col) {
     if (cells_[row][col] == nullptr) {
         return nullptr;
     }
+
     return cells_[row][col];
 }
 
-Particle::Kind Grid::cellType(const int row, const int col) const {
+Particle::Kind Grid::particleType(const int row, const int col) const {
     if (col < 0 || col >= width_) {
         return Particle::Kind::Rock;
     }
@@ -35,6 +44,8 @@ Particle::Kind Grid::cellType(const int row, const int col) const {
     } else if (cells_[row][col]->kind_ == Particle::Kind::Rock) {
         return Particle::Kind::Rock;
     }
+
+    return Particle::Kind::None; // failsafe
 }
 
 void Grid::evolve() {
@@ -50,19 +61,21 @@ void Grid::evolve() {
     //   - move to the only free diag cell
     for (int row = height_ - 2; row >= 0; --row) {
         for (int col = 0; col < width_; ++col) {
-            if (cellType(row, col) == Particle::Kind::Sand) {
+            if (particleType(row, col) == Particle::Kind::Sand) {
+                // Ok it's sand, now we can move it
+
                 Particle* pp = cells_[row][col];
 
                 // Straight down if possible
-                if (cellType(row + 1, col) == Particle::Kind::None) {
+                if (particleType(row + 1, col) == Particle::Kind::None) {
                     cells_[row + 1][col] = pp;
                     cells_[row][col] = nullptr;
                     continue;
                 }
 
                 // Otherwise look for a possible direction
-                bool left_free = cellType(row + 1, col - 1) == Particle::Kind::None;
-                bool right_free = cellType(row + 1, col + 1) == Particle::Kind::None;
+                bool left_free = particleType(row + 1, col - 1) == Particle::Kind::None;
+                bool right_free = particleType(row + 1, col + 1) == Particle::Kind::None;
 
                 if (left_free && right_free) {
                     int new_row = row + 1;
