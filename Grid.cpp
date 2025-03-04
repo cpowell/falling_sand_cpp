@@ -12,6 +12,16 @@ void Grid::addParticle(const int row, const int col, Particle::Kind kind) {
     cells_[row][col] = std::move(p);
 }
 
+void Grid::removeParticle(const int row, const int col) {
+    assert(row >= 0 && row < height_);
+    assert(col >= 0 && col < width_);
+
+    if (cells_[row][col] != nullptr) {
+        delete (cells_[row][col]);
+        cells_[row][col] = nullptr;
+    }
+}
+
 Particle* Grid::getParticle(const int row, const int col) const {
     if (col < 0 || col >= width_) {
         return nullptr;

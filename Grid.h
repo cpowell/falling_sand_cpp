@@ -13,6 +13,8 @@ public:
 
     void addParticle(const int row, const int col, Particle::Kind kind);
 
+    void removeParticle(const int row, const int col);
+
     Particle* getParticle(const int row, const int col) const;
 
     Particle::Kind particleType(const int row, const int col) const;

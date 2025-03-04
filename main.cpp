@@ -43,7 +43,11 @@ int main() {
         if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
             int nearest_row = pos.y / CELL_WIDTH;
             int nearest_col = pos.x / CELL_WIDTH;
-            g.addParticle(nearest_row, nearest_col, Particle::Kind::Rock);
+            if (IsKeyDown(KEY_E)) {
+                g.removeParticle(nearest_row, nearest_col);
+            } else {
+                g.addParticle(nearest_row, nearest_col, Particle::Kind::Rock);
+            }
         }
 
         // ===============================
