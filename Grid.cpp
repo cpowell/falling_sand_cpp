@@ -3,6 +3,9 @@
 //
 
 #include "Grid.h"
+#include "effolkronium/random.hpp"
+
+using Random = effolkronium::random_static;
 
 void Grid::addParticle(const int row, const int col, Particle::Kind kind) {
     assert(row >= 0 && row < height_);
@@ -54,10 +57,6 @@ Particle::Kind Grid::particleType(const int row, const int col) const {
 }
 
 void Grid::evolve() {
-    std::random_device rd;
-    gen_.seed(rd());
-    std::uniform_int_distribution<> dist(0, 1);
-
     // Algorithm:
     // - If cell below is empty, move there
     // - If cell below is occupied:
@@ -86,7 +85,7 @@ void Grid::evolve() {
                     int new_row = row + 1;
                     int new_col = col;
 
-                    if (dist(gen_)) {
+                    if (Random::get<bool>()) {
                         --new_col;
                     } else {
                         ++new_col;

@@ -1,8 +1,6 @@
 #pragma once
 #include "Particle.h"
 
-#include <assert.h>
-#include <random>
 #include <vector>
 
 class Grid {
